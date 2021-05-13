@@ -41,7 +41,7 @@ module.exports = Class.extend({
       this._master = _.extend({}, master, { id: (master.region + ':' + master.name), docs: this._makeDocClient(master) });
 
       this._slaves = _.map(slaves, function(def) {
-         return _.extend({}, def, { id: (def.region + ':' + def.name), docs: this._makeDocClient(def, opts.slaveCredentials) });
+         return _.extend({}, def, { id: (def.region + ':' + def.name), docs: this._makeDocClient(def) });
       }.bind(this));
 
       this._abortScanning = false;
@@ -569,10 +569,10 @@ module.exports = Class.extend({
          });
    },
 
-   _makeDocClient: function(def, creds) {
+   _makeDocClient: function(def) {
       return new AWS.DynamoDB.DocumentClient({
          region: def.region,
-         credentials: creds || AWS.config.credentials,
+         credentials: def.creds || AWS.config.credentials,
          maxRetries: this._opts.maxRetries,
          retryDelayOptions: {
             base: this._opts.retryDelayBase,
