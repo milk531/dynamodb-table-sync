@@ -507,7 +507,7 @@ module.exports = Class.extend({
    _compareTableDescriptions: function() {
       var def = Q.defer(),
           describeMaster = this._describeTable(this._master),
-          describeSlaves = Q.all(_.map(this._slaves, _.partial(this._describeTable.bind(this), _, this._opts.slaveCredentials)));
+          describeSlaves = Q.all(_.map(this._slaves, _.partial(this._describeTable.bind(this), _)));
 
       function logDescription(title, tableDef, tableDesc) {
          console.log('%s table %s', title, tableDef.id);
@@ -560,8 +560,8 @@ module.exports = Class.extend({
       return def.promise;
    },
 
-   _describeTable: function(tableDef, creds) {
-      var dyn = new AWS.DynamoDB({ region: tableDef.region, credentials: creds || AWS.config.credentials });
+   _describeTable: function(tableDef) {
+      var dyn = new AWS.DynamoDB({ region: tableDef.region, credentials: tableDef.creds || AWS.config.credentials });
 
       return Q.ninvoke(dyn, 'describeTable', { TableName: tableDef.name })
          .then(function(resp) {
